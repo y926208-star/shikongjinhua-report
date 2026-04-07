@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主播团转化活动复盘 | 失控进化</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Share+Tech+Mono&display=swap');
+:root {
+  /* ── 品牌色 ── */
+  --brand-red:    #C43F24;
+  --brand-red-2:  #FF7132;
+  --brand-red-dk: #882818;
+  --brand-dark:   #1E2020;
+  --brand-dark2:  #2A2928;
+  --brand-bone:   #E3DBD2;
+  --brand-bone-2: #3D1D1D;
+  /* ── UI 层级 ── */
+  --bg:          #0E0C0C;
+  --bg-card:     #161210;
+  --bg-card-2:   #1a1614;
+  --border:      #33271f;
+  --border-soft: #2a201a;
+  --text:        #D4C9C4;
+  --text-dim:    #9a8e88;
+  --text-muted:  #6e6260;
+  /* ── 功能色 ── */
+  --green:  #7EC98A;
+  --green-bg: rgba(126,201,138,.08);
+  --red-err: #E05252;
+  --red-bg:  rgba(224,82,82,.08);
+  --blue:   #6AAFCF;
+  --amber:  #D4882A;
+  /* ── 尺寸 ── */
+  --r: 4px; --r-sm: 2px;
+  --shadow: 0 4px 24px rgba(0,0,0,.5);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,.7);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  /* ── 全局噪点纹理 ── */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+}
+
+/* ══════════════ NAV ══════════════ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(14,12,12,.96);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  /* 顶部品牌红线 */
+}
+.nav::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--brand-red-dk),var(--brand-red),var(--brand-red-2),transparent);
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;
+  padding:0 28px;
+  display:flex;align-items:center;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 20px 11px 0;margin-right:10px;
+  border-right:1px solid var(--border);flex-shrink:0;
+}
+.nav-brand-icon{
+  width:28px;height:28px;
+  background:var(--brand-red);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;color:#fff;font-family:'Share Tech Mono',monospace;
+  flex-shrink:0;
+}
+.nav-brand span{
+  font-size:11px;font-weight:700;
+  color:#9a8e88;letter-spacing:2px;text-transform:uppercase;
+}
+.nav-links{display:flex;flex:1;overflow-x:auto;}
+.nav a{
+  color:#7a706c;text-decoration:none;
+  padding:13px 14px;
+  font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:all .2s;
+}
+.nav a:hover{color:var(--text-dim);}
+.nav a.active{color:var(--brand-red);border-bottom-color:var(--brand-red);}
+.nav-tag{
+  margin-left:auto;flex-shrink:0;
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;
+  background:rgba(196,63,36,.1);border:1px solid rgba(196,63,36,.2);
+  border-radius:2px;
+  font-size:10px;font-weight:700;color:var(--brand-red);
+  letter-spacing:1px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+}
+.nav-tag::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--brand-red);
+  animation:blink 1.8s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ══════════════ HEADER ══════════════ */
+.header{
+  position:relative;overflow:hidden;
+  padding:80px 28px 56px;
+  background:linear-gradient(150deg, #1a0a06 0%, #130c08 50%, #0e0c0c 100%);
+  border-bottom:1px solid var(--border);
+}
+/* 十字准线辅助线（品牌书装饰语言） */
+.header::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(196,63,36,.04) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(196,63,36,.04) 1px,transparent 1px);
+  background-size:80px 80px;
+  pointer-events:none;
+}
+.header::after{
+  content:'';
+  position:absolute;top:-200px;right:-100px;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(196,63,36,.08),transparent 60%);
+  border-radius:50%;pointer-events:none;
+}
+.header-bg-art{
+  position:absolute;top:0;right:0;bottom:0;width:50%;
+  background:url('brand_pages/page_01.jpg') right center/cover no-repeat;
+  opacity:.04;
+  mask-image:linear-gradient(to left,rgba(0,0,0,.6),transparent);
+  -webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.6),transparent);
+}
+.header-inner{max-width:1280px;margin:0 auto;position:relative;z-index:1;}
+
+/* 品牌书风格：分类标签 */
+.header-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-bottom:18px;
+}
+.header-tag-pill{
+  background:rgba(196,63,36,.12);
+  border:1px solid rgba(196,63,36,.25);
+  color:var(--brand-red);
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  padding:3px 10px;border-radius:2px;
+  font-family:'Share Tech Mono',monospace;
+}
+.header-tag-slash{color:#7a706c;font-size:12px;}
+.header-tag-sub{color:#7a706c;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;}
+
+.header h1{
+  font-size:46px;font-weight:900;
+  color:var(--brand-bone);
+  letter-spacing:1px;line-height:1.1;
+  margin-bottom:6px;
+  text-shadow:0 2px 20px rgba(196,63,36,.2);
+}
+.header h1 em{
+  font-style:normal;
+  color:var(--brand-red);
+  position:relative;
+}
+/* 划重点下划线装饰 */
+.header h1 em::after{
+  content:'';
+  position:absolute;bottom:-3px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--brand-red),var(--brand-red-2),transparent);
+}
+.header-sub{
+  color:#9a8e88;font-size:14px;margin-top:14px;
+  letter-spacing:.8px;
+  display:flex;align-items:center;gap:8px;
+}
+.header-sub::before{
+  content:'';width:16px;height:1px;background:var(--brand-red);
+}
+/* 品牌书风格：水平分割信息条 */
+.header-meta{
+  margin-top:32px;padding-top:20px;
+  border-top:1px solid rgba(196,63,36,.15);
+  display:flex;gap:0;flex-wrap:wrap;
+}
+.header-meta-item{
+  display:flex;flex-direction:column;gap:4px;
+  padding:0 32px 0 0;margin-right:32px;
+  border-right:1px solid var(--border);
+}
+.header-meta-item:last-child{border-right:none;}
+.header-meta-label{
+  font-size:10px;font-weight:700;color:#6e6260;
+  letter-spacing:2px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+}
+.header-meta-value{font-size:13px;color:#b8aeaa;font-weight:500;}
+
+/* ══════════════ CONTAINER ══════════════ */
+.container{max-width:1280px;margin:0 auto;padding:44px 28px;}
+.section{margin-bottom:60px;}
+
+/* ══════════════ SECTION HEADER ══════════════ */
+.section-header{margin-bottom:18px;}
+
+/* ══════════════ SECTION CONCLUSION ══════════════ */
+.section-conclusion{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:13px 18px;
+  background:rgba(196,63,36,.05);
+  border:1px solid rgba(196,63,36,.2);
+  border-left:3px solid var(--brand-red);
+  border-radius:var(--r);
+  margin-bottom:24px;
+  position:relative;
+  overflow:hidden;
+}
+.section-conclusion::before{
+  content:'CONCLUSION';
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:9px;font-weight:700;letter-spacing:3px;
+  font-family:'Share Tech Mono',monospace;
+  color:rgba(196,63,36,.15);
+  pointer-events:none;
+}
+.sc-icon{
+  flex-shrink:0;
+  width:24px;height:24px;
+  border-radius:50%;
+  background:rgba(196,63,36,.12);
+  border:1px solid rgba(196,63,36,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;
+  margin-top:1px;
+}
+.sc-body{display:flex;flex-direction:column;gap:5px;flex:1;}
+.sc-label{
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--brand-red);
+  font-family:'Share Tech Mono',monospace;
+  opacity:.8;
+}
+.sc-text{
+  font-size:13px;font-weight:500;
+  color:var(--brand-bone);
+  line-height:1.65;
+}
+.sc-text strong{color:#fff;font-weight:700;}
+.sc-text .sc-sep{color:rgba(196,63,36,.5);margin:0 6px;font-size:10px;}
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-bottom:10px;
+}
+.section-num{
+  font-size:10px;font-weight:700;
+  color:var(--brand-red);letter-spacing:2px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+}
+.section-divider-dot{width:3px;height:3px;border-radius:50%;background:var(--text-muted);}
+.section-label{
+  font-size:10px;color:#7a706c;
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+.section-title{
+  font-size:20px;font-weight:800;
+  color:var(--brand-bone);letter-spacing:.5px;
+  display:flex;align-items:center;gap:14px;
+}
+/* 品牌书风格：标题后的延伸线 */
+.section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(to right,var(--border),transparent);
+}
+/* 品牌书风格：标题前的色块 */
+.section-title::before{
+  content:'';width:3px;height:20px;
+  background:linear-gradient(to bottom,var(--brand-red),var(--brand-red-dk));
+  border-radius:1px;flex-shrink:0;
+}
+.section-desc{color:#7a706c;font-size:12px;margin-top:8px;padding-left:17px;}
+
+/* ══════════════ KPI CARDS ══════════════ */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(195px,1fr));
+  gap:10px;margin-bottom:18px;
+}
+.kpi-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px 20px 18px;
+  position:relative;overflow:hidden;
+  transition:border-color .25s,transform .2s,box-shadow .25s;
+  cursor:default;
+}
+.kpi-card:hover{
+  border-color:rgba(196,63,36,.3);
+  transform:translateY(-2px);
+  box-shadow:0 6px 24px rgba(196,63,36,.08);
+}
+/* 品牌书风格：顶部色条 */
+.kpi-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--brand-red),var(--brand-red-dk));
+}
+.kpi-card.c-orange::before{background:linear-gradient(90deg,var(--brand-red-2),#c45010);}
+.kpi-card.c-green::before{background:linear-gradient(90deg,var(--green),#3a8a48);}
+.kpi-card.c-blue::before{background:linear-gradient(90deg,var(--blue),#2a6a8f);}
+.kpi-card.c-amber::before{background:linear-gradient(90deg,var(--amber),#8a5510);}
+/* 背景噪点装饰 */
+.kpi-card::after{
+  content:'';
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.kpi-label{
+  font-size:10px;color:#7a706c;
+  margin-bottom:12px;
+  text-transform:uppercase;letter-spacing:1.2px;
+  font-family:'Share Tech Mono',monospace;
+}
+.kpi-value{
+  font-size:32px;font-weight:900;
+  color:var(--brand-bone);
+  letter-spacing:-1.5px;line-height:1;
+  font-family:'Share Tech Mono',monospace;
+}
+.kpi-sub{
+  font-size:11px;margin-top:10px;color:#9a8e88;
+  padding-top:8px;border-top:1px solid var(--border-soft);
+}
+.kpi-sub.up{color:var(--green);}
+.kpi-sub.down{color:var(--red-err);}
+
+/* ══════════════ CHART BOXES ══════════════ */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.chart-row.full{grid-template-columns:1fr;}
+.chart-box{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px 22px 18px;
+}
+.chart-box:hover{border-color:#352a26;}
+.chart-box-title{
+  font-size:11px;font-weight:700;
+  color:#9a8e88;
+  letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+  font-family:'Share Tech Mono',monospace;
+}
+.chart-box-title::before{
+  content:'';width:2px;height:11px;
+  background:var(--brand-red);border-radius:1px;flex-shrink:0;
+}
+.chart-container{width:100%;height:300px;}
+.chart-container.tall{height:360px;}
+
+/* ══════════════ TABLES ══════════════ */
+.table-wrap{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;margin-bottom:12px;
+}
+.table-head{
+  padding:14px 20px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+  background:rgba(196,63,36,.03);
+}
+.table-head h3{
+  font-size:11px;font-weight:700;
+  color:#7a706c;
+  letter-spacing:1px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:rgba(255,255,255,.02);}
+th{
+  text-align:left;padding:10px 18px;
+  font-weight:700;color:#7a706c;
+  font-size:10px;white-space:nowrap;
+  text-transform:uppercase;letter-spacing:1px;
+  border-bottom:1px solid var(--border);
+  font-family:'Share Tech Mono',monospace;
+}
+td{
+  padding:10px 18px;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  color:var(--text);white-space:nowrap;
+}
+tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.008);}
+tbody tr:hover td{background:rgba(196,63,36,.03);}
+
+/* ══════════════ BADGES ══════════════ */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:2px 7px;border-radius:2px;
+  font-size:11px;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+}
+.badge.up{background:var(--green-bg);color:var(--green);}
+.badge.down{background:var(--red-bg);color:var(--red-err);}
+.excess-tag{
+  display:inline-flex;align-items:center;
+  padding:3px 9px;border-radius:2px;
+  font-size:11px;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+}
+.excess-tag.positive{background:var(--green-bg);color:var(--green);}
+.excess-tag.negative{background:var(--red-bg);color:var(--red-err);}
+
+/* ══════════════ SUBSECTION LABEL ══════════════ */
+.subsection-label{
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  color:var(--brand-red);
+  text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+  padding:28px 0 14px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.subsection-label::before{
+  content:'';display:inline-block;
+  width:18px;height:1px;
+  background:var(--brand-red);
+}
+
+/* ══════════════ SOP FLOW / CALENDAR ══════════════ */
+/* 外层容器：横向时间轴 */
+.sop-flow{
+  display:flex;
+  gap:0;
+  margin-bottom:10px;
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+/* 每个阶段列 */
+.sop-col{
+  flex:1;min-width:140px;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+/* 阶段列之间的连接箭头 */
+.sop-col + .sop-col::before{
+  content:'';
+  position:absolute;
+  left:-1px;top:22px;
+  width:0;height:0;
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-left:10px solid rgba(196,63,36,.35);
+  z-index:2;
+}
+/* 阶段头部 */
+.sop-col-header{
+  background:rgba(196,63,36,.08);
+  border:1px solid rgba(196,63,36,.25);
+  border-right:none;
+  padding:10px 14px 9px;
+  display:flex;flex-direction:column;gap:3px;
+  position:relative;
+}
+.sop-col:last-child .sop-col-header{border-right:1px solid rgba(196,63,36,.25);}
+.sop-col-tag{
+  font-size:9px;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+  color:var(--brand-red);
+  letter-spacing:.5px;
+  opacity:.8;
+}
+.sop-col-name{
+  font-size:11px;font-weight:600;
+  color:var(--brand-bone);
+  line-height:1.3;
+}
+/* 步骤列表区 */
+.sop-col-body{
+  flex:1;
+  border:1px solid var(--border);
+  border-top:none;
+  border-right:none;
+  padding:10px;
+  background:rgba(22,18,16,.4);
+  display:flex;flex-direction:column;gap:6px;
+}
+.sop-col:last-child .sop-col-body{border-right:1px solid var(--border);}
+/* 单个步骤 */
+.sop-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.03);
+  border-radius:3px;
+  border-left:2px solid rgba(196,63,36,.3);
+  transition:border-color .2s,background .2s;
+}
+.sop-item:hover{
+  border-left-color:var(--brand-red);
+  background:rgba(196,63,36,.05);
+}
+.sop-item-num{
+  flex-shrink:0;
+  width:18px;height:18px;
+  border-radius:50%;
+  background:rgba(196,63,36,.15);
+  border:1px solid rgba(196,63,36,.35);
+  color:var(--brand-red);
+  font-size:9px;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:1px;
+}
+.sop-item-title{
+  font-size:12px;font-weight:600;
+  color:var(--brand-bone);
+  line-height:1.4;
+}
+/* 特殊：接口接入步骤高亮 */
+.sop-item.highlight{
+  border-left-color:var(--amber);
+  background:rgba(212,136,42,.04);
+}
+.sop-item.highlight .sop-item-num{
+  background:rgba(212,136,42,.15);
+  border-color:rgba(212,136,42,.4);
+  color:var(--amber);
+}
+
+/* ══════════════ DOC DOWNLOADS ══════════════ */
+.doc-downloads{
+  margin:0 0 0;
+  padding:28px 0 0;
+  border-top:1px solid var(--border);
+}
+.doc-downloads-title{
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.doc-downloads-title::before{
+  content:'';display:inline-block;
+  width:18px;height:1px;
+  background:var(--text-muted);
+}
+.doc-downloads-grid{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.doc-dl-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  background:rgba(30,32,32,.6);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  text-decoration:none;
+  cursor:pointer;
+  transition:border-color .2s,background .2s;
+  min-width:200px;
+}
+.doc-dl-item:hover{
+  border-color:rgba(196,63,36,.4);
+  background:rgba(196,63,36,.04);
+}
+.doc-dl-icon{
+  font-size:20px;line-height:1;flex-shrink:0;
+}
+.doc-dl-info{display:flex;flex-direction:column;gap:2px;}
+.doc-dl-name{
+  font-size:12px;font-weight:600;
+  color:var(--brand-bone);
+  line-height:1.3;
+}
+.doc-dl-meta{
+  font-size:10px;
+  color:#6e6260;
+  font-family:'Share Tech Mono',monospace;
+}
+
+/* ══════════════ OPS METHODS ══════════════ */
+.ops-methods-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:10px;
+}
+@media(max-width:700px){.ops-methods-grid{grid-template-columns:1fr;}}
+.ops-method-card{
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;
+  background:rgba(30,32,32,.5);
+}
+.ops-method-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;
+  background:rgba(30,32,32,.8);
+  border-bottom:1px solid var(--border);
+}
+.ops-method-icon{font-size:16px;line-height:1;}
+.ops-method-title{
+  flex:1;
+  font-size:13px;font-weight:600;
+  color:var(--brand-bone);
+}
+.ops-method-badge{
+  font-size:9px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+  color:#7a706c;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  padding:2px 8px;border-radius:2px;
+}
+.ops-method-placeholder{
+  padding:36px 18px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  min-height:160px;justify-content:center;
+}
+.placeholder-icon{font-size:28px;opacity:.3;}
+.placeholder-text{
+  font-size:13px;color:#6e6260;
+  font-weight:500;
+}
+.placeholder-sub{
+  font-size:11px;color:#4a4240;
+  text-align:center;
+}
+
+
+.insight{
+  border-radius:var(--r);
+  border:1px solid var(--border);
+  border-left:3px solid var(--brand-red);
+  background:rgba(196,63,36,.03);
+  padding:20px 22px;
+  margin-bottom:12px;
+  position:relative;overflow:hidden;
+}
+/* 品牌书风格：角落十字准线 */
+.insight::after{
+  content:'';
+  position:absolute;top:8px;right:10px;
+  width:12px;height:12px;
+  border-top:1px solid rgba(196,63,36,.2);
+  border-right:1px solid rgba(196,63,36,.2);
+}
+.insight.success{border-left-color:var(--green);background:rgba(126,201,138,.03);}
+.insight.warning{border-left-color:var(--amber);background:rgba(212,136,42,.03);}
+.insight.info{border-left-color:var(--blue);background:rgba(106,175,207,.03);}
+.insight-title{
+  font-size:11px;font-weight:700;
+  color:var(--brand-red);
+  text-transform:uppercase;letter-spacing:1.5px;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+  font-family:'Share Tech Mono',monospace;
+}
+.insight.success .insight-title{color:var(--green);}
+.insight.warning .insight-title{color:var(--amber);}
+.insight.info .insight-title{color:var(--blue);}
+.insight ul{list-style:none;padding:0;display:flex;flex-direction:column;}
+.insight li{
+  padding:7px 0 7px 14px;
+  position:relative;
+  font-size:13px;line-height:1.65;color:#c0b4ae;
+  border-bottom:1px solid rgba(255,255,255,.035);
+}
+.insight li:last-child{border-bottom:none;}
+.insight li::before{
+  content:'';position:absolute;left:0;top:15px;
+  width:4px;height:4px;border-radius:50%;
+  background:var(--brand-red);
+}
+.insight.success li::before{background:var(--green);}
+.insight.warning li::before{background:var(--amber);}
+.insight.info li::before{background:var(--blue);}
+.insight li strong{color:var(--brand-bone);font-weight:600;}
+
+/* ══════════════ POPUPS ══════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(12px);
+  justify-content:center;align-items:center;padding:20px;
+}
+.overlay.active{display:flex;}
+.popup{
+  background:var(--bg-card);
+  border:1px solid #2a2420;
+  border-top:2px solid var(--brand-red);
+  border-radius:var(--r);
+  padding:32px;
+  width:100%;max-width:920px;
+  max-height:88vh;overflow-y:auto;
+  position:relative;
+  box-shadow:var(--shadow-lg),0 0 60px rgba(196,63,36,.06);
+  animation:popIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+/* 品牌书风格：弹窗四角装饰 */
+.popup::before,.popup::after,
+.popup-corner-bl,.popup-corner-br{
+  content:'';
+  position:absolute;
+  width:10px;height:10px;
+}
+.popup::before{top:8px;left:8px;border-top:1px solid rgba(196,63,36,.3);border-left:1px solid rgba(196,63,36,.3);}
+.popup::after{bottom:8px;right:8px;border-bottom:1px solid rgba(196,63,36,.3);border-right:1px solid rgba(196,63,36,.3);}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.94) translateY(14px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+.popup-close{
+  position:absolute;top:16px;right:18px;cursor:pointer;
+  font-size:12px;color:var(--text-muted);
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);border-radius:2px;
+  background:rgba(255,255,255,.04);
+  transition:all .2s;
+  font-family:'Share Tech Mono',monospace;
+}
+.popup-close:hover{color:var(--brand-bone);border-color:var(--brand-red);background:rgba(196,63,36,.1);}
+.popup-title{
+  font-size:18px;font-weight:800;
+  color:var(--brand-bone);margin-bottom:4px;
+}
+.popup-desc{font-size:12px;color:var(--text-muted);margin-bottom:22px;}
+.popup::-webkit-scrollbar{width:3px;}
+.popup::-webkit-scrollbar-track{background:transparent;}
+.popup::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ══════════════ FOOTER ══════════════ */
+.footer{
+  text-align:center;padding:36px 28px;
+  color:var(--text-muted);font-size:10px;
+  border-top:1px solid var(--border);
+  letter-spacing:2px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;
+  position:relative;
+}
+/* 品牌书：底部装饰线 */
+.footer::before{
+  content:'';
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--brand-red),transparent);
+}
+.footer em{color:var(--brand-red);font-style:normal;margin:0 6px;}
+
+/* ══════════════ MISC ══════════════ */
+@media(max-width:768px){
+  .chart-row{grid-template-columns:1fr;}
+  .header{padding:40px 20px 36px;}
+  .header h1{font-size:30px;}
+  .container{padding:24px 16px;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .popup{padding:24px 18px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-brand-icon">失</div>
+      <span>失控进化</span>
+    </div>
+    <div class="nav-links">
+      <a href="#s-overview" class="active">Overview</a>
+      <a href="#s-new">新用户分析</a>
+      <a href="#s-old">老用户分析</a>
+      <a href="#s-deep">深度分析</a>
+      <a href="#s-summary">活动总结</a>
+    </div>
+    <div class="nav-tag">实时报告</div>
+  </div>
+</nav>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-bg-art"></div>
+  <div class="header-inner">
+    <div class="header-eyebrow">
+      <span class="header-tag-pill">活动复盘报告</span>
+      <span class="header-tag-slash">/</span>
+      <span class="header-tag-sub">2026 · Q1</span>
+    </div>
+    <h1>主播团 <em>转化活动</em> 复盘</h1>
+    <div class="header-sub">35位主播私域渠道全量用户数据分析</div>
+    <div class="header-meta">
+      <div class="header-meta-item">
+        <span class="header-meta-label">活动周期</span>
+        <span class="header-meta-value">2026.3.6 — 3.30 &nbsp;（25天）</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">主播数量</span>
+        <span class="header-meta-value">35 位</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">总入团人数</span>
+        <span class="header-meta-value">25,840 人</span>
+      </div>
+      <div class="header-meta-item">
+        <span class="header-meta-label">活动预算</span>
+        <span class="header-meta-value">¥30,000</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTAINER ══ -->
+<div class="container">
+
+<!-- ════════════════ S1 Overview ════════════════ -->
+<div class="section" id="s-overview">
+  <div class="section-header">
+    <div class="section-eyebrow">
+      <span class="section-num">01 &mdash; 总览</span>
+      <div class="section-divider-dot"></div>
+      <span class="section-label">核心数据总览</span>
+    </div>
+    <h2 class="section-title">活动核心总览</h2>
+    <p class="section-desc">活动期间（3.6–3.30）35位主播私域渠道全量用户核心指标</p>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-icon">💡</div>
+    <div class="sc-body">
+      <div class="sc-label">核心结论</div>
+      <div class="sc-text">
+        活动 ROI <strong>337.1%</strong>，投入¥3万撬动 <strong>¥13.1万</strong> 流水，CPA <strong>¥4.54</strong> 远低于行业买量成本；共吸引 <strong>25,840人</strong> 入团，转化 <strong>6,615位</strong> 新注册用户，是一次高性价比的私域拉新活动。
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">总入团人数</div>
+      <div class="kpi-value">25,840</div>
+      <div class="kpi-sub up">↑ 新用户 23,443（占比 90.7%）</div>
+    </div>
+    <div class="kpi-card c-green" id="funnel-trigger-card" style="cursor:pointer;">
+      <div class="kpi-label">新用户注册数</div>
+      <div class="kpi-value">6,615</div>
+      <div class="kpi-sub up">↑ 注册转化率 28.2% &nbsp;·&nbsp; <span style="font-size:10px;opacity:.5">点击漏斗</span></div>
+    </div>
+    <div class="kpi-card c-blue">
+      <div class="kpi-label">活动总流水</div>
+      <div class="kpi-value">¥131,128</div>
+      <div class="kpi-sub up">↑ 新用户贡献 ¥50,528</div>
+    </div>
+    <div class="kpi-card c-orange" id="roi-trigger-card" style="cursor:pointer;">
+      <div class="kpi-label">活动 ROI</div>
+      <div class="kpi-value">337.1%</div>
+      <div class="kpi-sub up">↑ 投入¥3万 → 产出¥13.1万 &nbsp;·&nbsp; <span style="font-size:10px;opacity:.5">点击详情</span></div>
+    </div>
+    <div class="kpi-card c-amber">
+      <div class="kpi-label">CPA（注册成本）</div>
+      <div class="kpi-value">¥4.54</div>
+      <div class="kpi-sub up">↑ 人均入团成本 ¥1.16</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ROI POPUP ════ -->
+<div class="overlay" id="roi-overlay">
+  <div class="popup">
+    <div class="popup-close" id="roi-close">✕</div>
+    <div class="popup-title">投入产出分析</div>
+    <p class="popup-desc">活动总投入 ¥30,000，覆盖 35 位主播激励费用</p>
+    <div class="kpi-grid" style="margin-bottom:18px;">
+      <div class="kpi-card c-orange"><div class="kpi-label">总 ROI</div><div class="kpi-value">337.1%</div><div class="kpi-sub">总流水 ¥131,128 / 投入 ¥30,000</div></div>
+      <div class="kpi-card c-blue"><div class="kpi-label">新用户 ROI</div><div class="kpi-value">68.4%</div><div class="kpi-sub">新用户流水 ¥50,528</div></div>
+      <div class="kpi-card c-amber"><div class="kpi-label">注册成本 CPA</div><div class="kpi-value">¥4.54</div><div class="kpi-sub">¥30,000 / 6,615 注册</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-box"><div class="chart-box-title">投入产出结构</div><div class="chart-container" id="chart-roi-pie"></div></div>
+      <div class="chart-box"><div class="chart-box-title">成本效率对比</div><div class="chart-container" id="chart-roi-bar"></div></div>
+    </div>
+    <div class="insight" style="margin-top:14px;">
+      <div class="insight-title">ROI · 核心洞察</div>
+      <ul>
+        <li><strong>总 ROI 337.1%</strong>：投入 ¥3 万撬动 ¥13.1 万流水，即使仅算新用户流水（¥5 万）ROI 仍达 68.4%。</li>
+        <li><strong>CPA ¥4.54 极具竞争力</strong>：远低于常规买量成本（通常 ¥20–50+），私域渠道成本优势显著。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FUNNEL POPUP ════ -->
+<div class="overlay" id="funnel-overlay">
+  <div class="popup" style="max-width:980px;">
+    <div class="popup-close" id="funnel-close">✕</div>
+    <div class="popup-title">转化漏斗分析</div>
+    <p class="popup-desc">新用户从入团到付费各阶段转化情况</p>
+    <div class="chart-row">
+      <div class="chart-box"><div class="chart-box-title">总入团用户构成</div><div class="chart-container" id="chart-join-pie"></div></div>
+      <div class="chart-box"><div class="chart-box-title">新用户转化漏斗</div><div class="chart-container tall" id="chart-funnel"></div></div>
+    </div>
+    <div class="insight" style="margin-top:14px;">
+      <div class="insight-title">转化漏斗 · 核心洞察</div>
+      <ul>
+        <li><strong>入团→注册 28.2%</strong>：约 71.8% 新用户入团后未注册（16,828 人），是最大流失环节。</li>
+        <li><strong>注册→日均活跃 14.6%</strong>：6,615 注册用户日均活跃 967 人，留存仍有提升空间。</li>
+        <li><strong>活跃→日均付费 3.5%</strong>：日均约 34 人付费，付费渗透率高于大盘（2.26%）。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ S2 新用户 ════════════════ -->
+<div class="section" id="s-new">
+  <div class="section-header">
+    <div class="section-eyebrow">
+      <span class="section-num">02 &mdash; 新用户</span>
+      <div class="section-divider-dot"></div>
+      <span class="section-label">活动新用户分析</span>
+    </div>
+    <h2 class="section-title">新用户质量分析</h2>
+    <p class="section-desc">活动渠道新用户与大盘新用户各维度质量对比（n=6,615）</p>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-icon">💡</div>
+    <div class="sc-body">
+      <div class="sc-label">核心结论</div>
+      <div class="sc-text">
+        活动新用户质量<strong>全面优于大盘</strong>：ARPU <strong>+114.2%</strong>、付费渗透率 <strong>+56.6%</strong>、在线时长 <strong>+25.7%</strong>，主播信任背书带来的用户付费意愿远超自然渠道，私域渠道是高质量用户的重要来源。
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box"><div class="chart-box-title">新用户质量对比 · 雷达图</div><div class="chart-container" id="chart-bench-radar"></div></div>
+    <div class="chart-box"><div class="chart-box-title">关键指标 · 柱状对比</div><div class="chart-container" id="chart-bench-bar"></div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head"><h3>活动新用户 vs 大盘新用户</h3></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>指标</th><th>活动新用户</th><th>大盘新用户</th><th>差异</th><th>评估</th></tr></thead>
+      <tbody>
+        <tr><td>总注册</td><td>6,615</td><td>117,693</td><td>占比 5.6%</td><td style="color:var(--text-muted)">—</td></tr>
+        <tr><td>日均在线</td><td>224.2 分钟</td><td>178.4 分钟</td><td><span class="badge up">+25.7%</span></td><td style="color:var(--green)">显著优于大盘</td></tr>
+        <tr><td>ARPU</td><td>¥2.27</td><td>¥1.06</td><td><span class="badge up">+114.2%</span></td><td style="color:var(--green)">大幅领先</td></tr>
+        <tr><td>付费渗透率</td><td>3.54%</td><td>2.26%</td><td><span class="badge up">+56.6%</span></td><td style="color:var(--green)">明显优于大盘</td></tr>
+        <tr><td>ARPPU</td><td>¥60.65</td><td>¥50.02</td><td><span class="badge up">+21.3%</span></td><td style="color:var(--green)">优于大盘</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="chart-row full">
+    <div class="chart-box"><div class="chart-box-title">日均在线时长 · 活动新用户 vs 大盘</div><div class="chart-container tall" id="chart-online-cmp"></div></div>
+  </div>
+  <div class="chart-row full">
+    <div class="chart-box"><div class="chart-box-title">付费渗透率 · 活动新用户 vs 大盘</div><div class="chart-container tall" id="chart-payrate-cmp"></div></div>
+  </div>
+
+  <div class="insight success">
+    <div class="insight-title">新用户 · 核心洞察</div>
+    <ul>
+      <li><strong>活动新用户全面优于大盘</strong>：在线时长、ARPU、付费渗透率、ARPPU 四项核心指标均显著领先。</li>
+      <li><strong>ARPU 领先幅度最大（+114.2%）</strong>：主播信任背书带来的用户付费意愿远超自然渠道。</li>
+      <li><strong>在线时长持续领先</strong>：活动期间几乎每日均高于大盘，优势稳定。</li>
+      <li><strong>付费渗透率 W1 最高（8.6%）</strong>：随新用户涌入逐步回归 2–3% 区间，属正常稀释效应。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════ S3 老用户 ════════════════ -->
+<div class="section" id="s-old">
+  <div class="section-header">
+    <div class="section-eyebrow">
+      <span class="section-num">03 &mdash; 老用户</span>
+      <div class="section-divider-dot"></div>
+      <span class="section-label">活动老用户分析</span>
+    </div>
+    <h2 class="section-title">老用户留存分析</h2>
+    <p class="section-desc">老用户（入团 2,397人）变化率与大盘对比，剥离自然衰减影响</p>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-icon">💡</div>
+    <div class="sc-body">
+      <div class="sc-label">核心结论</div>
+      <div class="sc-text">
+        活动对老用户的核心价值在于<strong>保活而非促付费</strong>：活跃度超额 <strong>+29.8%</strong>（大盘降 44.7%，老用户仅降 14.9%），入团社交机制有效减缓流失；但付费指标跑输大盘，下一期需嵌入老用户专属付费激励。
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head"><h3>老用户 vs 大盘 · 变化率对比</h3></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>指标</th><th>活动前</th><th>活动期</th><th>老用户变化</th><th>大盘变化</th><th>超额变化</th></tr></thead>
+      <tbody>
+        <tr><td>日均活跃</td><td>1,123</td><td>956</td><td><span class="badge down">-14.9%</span></td><td><span class="badge down">-44.7%</span></td><td><span class="excess-tag positive">+29.8% ✓</span></td></tr>
+        <tr><td>日均在线</td><td>323.9 分钟</td><td>257.0 分钟</td><td><span class="badge down">-20.7%</span></td><td><span class="badge down">-13.6%</span></td><td><span class="excess-tag negative">-7.1%</span></td></tr>
+        <tr><td>日均流水</td><td>¥7,606</td><td>¥3,224</td><td><span class="badge down">-57.6%</span></td><td><span class="badge down">-52.0%</span></td><td><span class="excess-tag negative">-5.6%</span></td></tr>
+        <tr><td>日均付费用户</td><td>65.7</td><td>25.2</td><td><span class="badge down">-61.6%</span></td><td><span class="badge down">-60.3%</span></td><td><span class="excess-tag negative">-1.3%</span></td></tr>
+        <tr><td>ARPU</td><td>¥6.97</td><td>¥3.18</td><td><span class="badge down">-54.4%</span></td><td><span class="badge down">-13.9%</span></td><td><span class="excess-tag negative">-40.5%</span></td></tr>
+        <tr><td>付费渗透率</td><td>6.01%</td><td>2.52%</td><td><span class="badge down">-58.1%</span></td><td><span class="badge down">-31.6%</span></td><td><span class="excess-tag negative">-26.5%</span></td></tr>
+        <tr><td>ARPPU</td><td>¥115.08</td><td>¥123.28</td><td><span class="badge up">+7.1%</span></td><td><span class="badge up">+25.2%</span></td><td><span class="excess-tag negative">-18.1%</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box"><div class="chart-box-title">老用户 vs 大盘 · 变化率</div><div class="chart-container" id="chart-old-vs"></div></div>
+    <div class="chart-box"><div class="chart-box-title">超额变化 · 活动净效果</div><div class="chart-container" id="chart-excess"></div></div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-title">老用户 · 核心洞察</div>
+    <ul>
+      <li><strong>活跃度超额 +29.8%</strong>：大盘降 44.7%，老用户仅降 14.9%。入团社交机制有效减缓流失。</li>
+      <li><strong>付费指标跑输大盘</strong>：活动侧重「入团拉新」而非「付费激励」，老用户参与动力更多来自社交。</li>
+      <li><strong>核心结论</strong>：活动对老用户最大价值在于 <strong>保活</strong>，而非促付费。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════ S4 深度分析 ════════════════ -->
+<div class="section" id="s-deep">
+  <div class="section-header">
+    <div class="section-eyebrow">
+      <span class="section-num">04 &mdash; 深度分析</span>
+      <div class="section-divider-dot"></div>
+      <span class="section-label">活动用户深度分析</span>
+    </div>
+    <h2 class="section-title">全量活动数据</h2>
+    <p class="section-desc">全量活动用户（新用户 + 老用户）在活动期间的行为数据</p>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-icon">💡</div>
+    <div class="sc-body">
+      <div class="sc-label">核心结论</div>
+      <div class="sc-text">
+        <strong>W3（3.20–3.26）</strong> 是拉新与流水双高峰周；<strong>3月18日</strong> 单日注册尖峰达 <strong>1,046人</strong>，是可复制的运营高峰；日均活跃从 W1 的 1,378 持续增至 W3 的 2,416，新用户累积效应显著推动活跃池扩大。
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head"><h3>分周数据汇总 · 全量活动用户</h3></div>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>周期</th><th>新注册</th><th>日均活跃</th><th>累计流水</th><th>日均在线（分钟）</th><th>付费渗透率</th></tr></thead>
+      <tbody>
+        <tr><td>W1 &nbsp;（3.6 – 3.12）</td><td>568</td><td>1,378</td><td>¥43,802</td><td>237.0</td><td>3.61%</td></tr>
+        <tr><td>W2 &nbsp;（3.13 – 3.19）</td><td>2,382</td><td>1,873</td><td>¥30,846</td><td>231.4</td><td>2.86%</td></tr>
+        <tr><td>W3 &nbsp;（3.20 – 3.26）</td><td>2,648</td><td>2,416</td><td>¥42,754</td><td>239.2</td><td>2.72%</td></tr>
+        <tr><td>W4 &nbsp;（3.27 – 3.30）</td><td>1,017</td><td>2,035</td><td>¥13,868</td><td>222.3</td><td>2.13%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box"><div class="chart-box-title">每日新注册用户数</div><div class="chart-container" id="chart-reg"></div></div>
+    <div class="chart-box"><div class="chart-box-title">每日活跃 &amp; 人均在线时长</div><div class="chart-container" id="chart-active"></div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box"><div class="chart-box-title">每日流水收入</div><div class="chart-container" id="chart-rev"></div></div>
+    <div class="chart-box"><div class="chart-box-title">付费渗透率 &amp; ARPU</div><div class="chart-container" id="chart-pay"></div></div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-title">全量活动 · 核心洞察</div>
+    <ul>
+      <li><strong>总流水 ¥131,128</strong>：新用户贡献 38.5%，老用户贡献 61.5%，老用户是流水主力。</li>
+      <li><strong>W3 是拉新 + 流水双高峰周</strong>：新注册 2,648 人（占 40%），全量流水 ¥42,754（占 33%）。</li>
+      <li><strong>3 月 18 日注册尖峰（1,046 人）</strong>：建议回溯当天运营动作，复制高峰经验。</li>
+      <li><strong>日均活跃持续增长</strong>：从 W1 的 1,378 增至 W3 的 2,416，新用户累积推动活跃池扩大。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════ S5 活动总结及沉淀 ════════════════ -->
+<div class="section" id="s-summary">
+  <div class="section-header">
+    <div class="section-eyebrow">
+      <span class="section-num">05 &mdash; 总结</span>
+      <div class="section-divider-dot"></div>
+      <span class="section-label">活动总结及沉淀</span>
+    </div>
+    <h2 class="section-title">活动总结及沉淀</h2>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-icon">💡</div>
+    <div class="sc-body">
+      <div class="sc-label">核心结论</div>
+      <div class="sc-text">
+        本次活动验证了<strong>主播私域渠道</strong>拉新的高效性与可规模化复制性；核心瓶颈在于<strong>入团→注册</strong>转化（28.2%，71.8% 流失）；建议下一期重点优化注册链路、嵌入老用户付费激励，并基于本次 SOP 持续迭代活动体系。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5.1 活动结论 ── -->
+  <div class="subsection-label">5.1 &nbsp;活动结论</div>
+
+  <div class="insight success">
+    <div class="insight-title">✓ 活动成效</div>
+    <ul>
+      <li><strong>ROI 优异</strong>：投入 ¥3 万，产出 ¥13.1 万，ROI 337.1%；CPA ¥4.54 远低于行业水平。</li>
+      <li><strong>拉新达成</strong>：25,840 人入团，6,615 位新用户注册，转化率 28.2%。</li>
+      <li><strong>用户质量优异</strong>：ARPU（+114%）、付费渗透率（+57%）、在线时长（+26%）全面领先大盘。</li>
+      <li><strong>老用户保活显著</strong>：活跃度超额 +29.8%，入团社交机制有效减缓流失。</li>
+    </ul>
+  </div>
+
+  <div class="insight warning">
+    <div class="insight-title">⚠ 待优化点</div>
+    <ul>
+      <li><strong>入团→注册转化率提升空间大</strong>：71.8% 未注册，建议优化注册流程、即时推送注册激励。</li>
+      <li><strong>后期拉新动力衰减</strong>：W4 日均注册低于 W3，可考虑阶梯式激励机制。</li>
+      <li><strong>老用户付费未受活动提振</strong>：需嵌入老用户专属付费激励。</li>
+      <li><strong>测试资格灰产风险需防范</strong>：活动期间出现倒卖测试资格的灰产行为，部分名额流向非目标用户，影响拉新数据真实性与活动公平性。后续活动应在规则层面增加领取门槛（如绑定主播直播间实名观看、限时激活机制），并配合技术侧对异常领取行为进行监控与拦截，从源头压缩灰产操作空间。</li>
+    </ul>
+  </div>
+
+  <!-- ── 5.2 活动流程 SOP ── -->
+  <div class="subsection-label">5.2 &nbsp;活动流程 SOP 梳理</div>
+
+  <div class="sop-flow">
+
+    <!-- 阶段 1：准备期 -->
+    <div class="sop-col">
+      <div class="sop-col-header">
+        <span class="sop-col-tag">T-4 ~ T-2</span>
+        <span class="sop-col-name">准备期</span>
+      </div>
+      <div class="sop-col-body">
+        <div class="sop-item highlight">
+          <div class="sop-item-num">01</div>
+          <div class="sop-item-title">相关接口接入</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">02</div>
+          <div class="sop-item-title">规则梳理 &amp; 方案定稿</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">03</div>
+          <div class="sop-item-title">资源盘点 &amp; 物料确认</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">04</div>
+          <div class="sop-item-title">主播 List 筛选 &amp; 邀约</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阶段 2：上线前 -->
+    <div class="sop-col">
+      <div class="sop-col-header">
+        <span class="sop-col-tag">T-1</span>
+        <span class="sop-col-name">上线前</span>
+      </div>
+      <div class="sop-col-body">
+        <div class="sop-item">
+          <div class="sop-item-num">05</div>
+          <div class="sop-item-title">活动配置 &amp; 系统测试</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">06</div>
+          <div class="sop-item-title">主播宣讲 &amp; 执行培训</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阶段 3：第一周 -->
+    <div class="sop-col">
+      <div class="sop-col-header">
+        <span class="sop-col-tag">T+0 ~ T+7</span>
+        <span class="sop-col-name">活动期第一周</span>
+      </div>
+      <div class="sop-col-body">
+        <div class="sop-item">
+          <div class="sop-item-num">07</div>
+          <div class="sop-item-title">活动正式上线</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">08</div>
+          <div class="sop-item-title">初步复盘 &amp; 数据看板搭建</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">09</div>
+          <div class="sop-item-title">私域运营方法输出</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">10</div>
+          <div class="sop-item-title">首周数据回顾</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阶段 4：第二周 -->
+    <div class="sop-col">
+      <div class="sop-col-header">
+        <span class="sop-col-tag">T+8 ~ T+14</span>
+        <span class="sop-col-name">活动期第二周</span>
+      </div>
+      <div class="sop-col-body">
+        <div class="sop-item">
+          <div class="sop-item-num">11</div>
+          <div class="sop-item-title">额外激励方案落地</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">12</div>
+          <div class="sop-item-title">次周数据回顾 &amp; 中期评估</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阶段 5：收尾期 -->
+    <div class="sop-col">
+      <div class="sop-col-header">
+        <span class="sop-col-tag">T+15 ~ 结束</span>
+        <span class="sop-col-name">收尾期</span>
+      </div>
+      <div class="sop-col-body">
+        <div class="sop-item">
+          <div class="sop-item-num">13</div>
+          <div class="sop-item-title">数据汇总 &amp; 异常核查</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">14</div>
+          <div class="sop-item-title">奖励结算 &amp; 公示</div>
+        </div>
+        <div class="sop-item">
+          <div class="sop-item-num">15</div>
+          <div class="sop-item-title">复盘报告 &amp; SOP 沉淀</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sop-flow -->
+
+  <!-- ── 5.3 有效运营手段梳理 ── -->
+  <div class="subsection-label">5.3 &nbsp;有效运营手段梳理</div>
+
+  <!-- 主办方视角 -->
+  <div class="ops-method-card" style="margin-bottom:14px;">
+    <div class="ops-method-header">
+      <span class="ops-method-icon">🎯</span>
+      <span class="ops-method-title">活动主办方视角</span>
+      <span class="ops-method-badge">已验证有效</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+
+      <!-- 手段1 -->
+      <div style="padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(196,63,36,.15);border:1px solid rgba(196,63,36,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--brand-red);font-family:'Share Tech Mono',monospace;flex-shrink:0;">01</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">专属邀请制 + 团长链接绑定</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">为每位团长生成唯一拉新链接，通过链接入团即自动绑定归属，数据实时可追踪。邀请制保证首批团长质量，形成"精英示范效应"。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(126,201,138,.06);border:1px solid rgba(126,201,138,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--green);font-weight:600;">✓ 效果：</span>
+          <span style="font-size:11px;color:#9a8e88;">首批30人邀约制，无广告费自发扩散</span>
+        </div>
+        <!-- 图片：主播团管理表 -->
+        <div style="margin-top:12px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image2.png" alt="主播团管理后台" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">主播团专属邀请码管理后台</div>
+        </div>
+      </div>
+
+      <!-- 手段2 -->
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(196,63,36,.15);border:1px solid rgba(196,63,36,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--brand-red);font-family:'Share Tech Mono',monospace;flex-shrink:0;">02</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">梯度激励 + 加码转化专项</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">基础激励（固定费用）+ 转化榜奖金（1万元专项）+ 社群活动基金（200元/人），三层激励叠加。<strong style="color:var(--brand-bone);">关键动作：活动中期追加1万元转化激励</strong>，直接将整体转化率从19%拉升至46.19%。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(196,63,36,.06);border:1px solid rgba(196,63,36,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--brand-red);font-weight:600;">↑ 激励前后：</span>
+          <span style="font-size:11px;color:#9a8e88;">转化率 19% → <strong style="color:var(--brand-bone);">46.19%</strong>，翻超2倍</span>
+        </div>
+        <div style="margin-top:10px;padding:10px;background:rgba(22,18,16,.5);border:1px solid var(--border);border-radius:3px;">
+          <div style="font-size:10px;color:#6e6260;margin-bottom:6px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;">激励结构分层</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#9a8e88;">转化榜 TOP3 奖励</span><span style="color:var(--amber);font-weight:700;">¥5,000 / 3,000 / 2,000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#9a8e88;">开播带玩奖励</span><span style="color:var(--blue);font-weight:700;">¥300 × 10人</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#9a8e88;">社群活动基金</span><span style="color:var(--green);font-weight:700;">¥200 × 自主申领</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 手段3 -->
+      <div style="padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(196,63,36,.15);border:1px solid rgba(196,63,36,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--brand-red);font-family:'Share Tech Mono',monospace;flex-shrink:0;">03</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">开服卡资源赋能带玩</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">向团长下发开服卡，团长可在直播间组织专属服务器带粉丝一起玩。开服卡是"强互动"的核心工具，能让主播从"介绍者"升级为"带队领袖"，有效提升粉丝归属感与转化率。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(106,175,207,.06);border:1px solid rgba(106,175,207,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--blue);font-weight:600;">📊 数据对比：</span>
+          <span style="font-size:11px;color:#9a8e88;">使用开服卡转化率均值 <strong style="color:var(--brand-bone);">~52%</strong> vs 未使用 ~15%</span>
+        </div>
+        <!-- 开服卡带粉游戏截图 -->
+        <div style="margin-top:12px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image12.png" alt="开服卡带粉游玩" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">主播开服卡带粉丝一起玩（游戏实机画面）</div>
+        </div>
+      </div>
+
+      <!-- 手段4 -->
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(196,63,36,.15);border:1px solid rgba(196,63,36,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--brand-red);font-family:'Share Tech Mono',monospace;flex-shrink:0;">04</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">官方引流 + 社群话术赋能</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">官方为团长提供标准化话术模板、推流资源（活动期间提升流量权重），并在官方渠道公示排行榜。话术赋能降低团长执行门槛，荣誉驱动维持高投入状态。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(212,136,42,.06);border:1px solid rgba(212,136,42,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--amber);font-weight:600;">💡 洞察：</span>
+          <span style="font-size:11px;color:#9a8e88;">多位未领现金奖励的团长（如Ndg、金振）依然保持高投入，荣誉感驱动效果显著</span>
+        </div>
+        <!-- 主播群聊拉人截图 -->
+        <div style="margin-top:12px;border-radius:3px;overflow:hidden;border:1px solid var(--border);max-height:200px;overflow:hidden;">
+          <img src="image3.png" alt="主播群社群运营话术" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">主播在私域群内高频发起招募话术</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 主播侧视角 -->
+  <div class="ops-method-card" style="margin-bottom:14px;">
+    <div class="ops-method-header">
+      <span class="ops-method-icon">🎙</span>
+      <span class="ops-method-title">主播侧视角</span>
+      <span class="ops-method-badge">已验证有效</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+
+      <!-- 主播手段1 -->
+      <div style="padding:18px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(126,201,138,.12);border:1px solid rgba(126,201,138,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);font-family:'Share Tech Mono',monospace;flex-shrink:0;">A</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">直播间高频口播 + 实时展示拆家过程</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">高转化主播的核心手段：每场直播持续口播活动链接，同时展示自己拆家/建造的精彩内容，用游戏乐趣本身驱动观众行动。博楠日常多次口播，凭借深度互动实现 <strong style="color:var(--brand-bone);">78.2%</strong> 超高转化率。</p>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="padding:8px;background:rgba(22,18,16,.5);border:1px solid var(--border);border-radius:3px;text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:var(--green);font-family:'Share Tech Mono',monospace;">78.2%</div>
+            <div style="font-size:10px;color:#6e6260;margin-top:2px;">博楠 转化率</div>
+          </div>
+          <div style="padding:8px;background:rgba(22,18,16,.5);border:1px solid var(--border);border-radius:3px;text-align:center;">
+            <div style="font-size:18px;font-weight:900;color:var(--green);font-family:'Share Tech Mono',monospace;">200+</div>
+            <div style="font-size:10px;color:#6e6260;margin-top:2px;">金振 单人宣传次数</div>
+          </div>
+        </div>
+        <!-- 直播间截图 -->
+        <div style="margin-top:10px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image14.png" alt="主播拆家直播画面" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">主播带团员一起拆家，展示游戏核心玩法</div>
+        </div>
+      </div>
+
+      <!-- 主播手段2 -->
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(126,201,138,.12);border:1px solid rgba(126,201,138,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);font-family:'Share Tech Mono',monospace;flex-shrink:0;">B</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">私域社群定向发起招募</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">主播将活动链接发至自有粉丝群，@所有人定向招募，配合"进团有福利"话术形成二次传播。CH酷凡通过群内高频发送，实现社群宣传次数100+次。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(126,201,138,.06);border:1px solid rgba(126,201,138,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--green);font-weight:600;">✓ 最佳实践：</span>
+          <span style="font-size:11px;color:#9a8e88;">固定话术模板 + 群公告置顶 + 定期@所有人</span>
+        </div>
+        <!-- 私域群截图 -->
+        <div style="margin-top:10px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image5.png" alt="主播粉丝群招募" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">主播在粉丝群@所有人发起招募（鸽子粉丝群，152人）</div>
+        </div>
+      </div>
+
+      <!-- 主播手段3 -->
+      <div style="padding:18px 20px;border-right:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(126,201,138,.12);border:1px solid rgba(126,201,138,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);font-family:'Share Tech Mono',monospace;flex-shrink:0;">C</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">自办娱乐赛事 + 申请活动基金</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">高优主播自主设计游戏内娱乐赛事（如年阳的"八爪鱼游戏"、不若的水友赛），申请200元活动基金作为奖金，配合直播专属UI，将活动变成"粉丝必参与"的高频节目。</p>
+        <div style="margin-top:12px;padding:10px;background:rgba(22,18,16,.5);border:1px solid var(--border);border-radius:3px;">
+          <div style="font-size:10px;color:#6e6260;margin-bottom:6px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;">八爪鱼游戏·活动数据</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center;">
+            <div><div style="font-size:16px;font-weight:900;color:var(--amber);font-family:'Share Tech Mono',monospace;">3,385</div><div style="font-size:10px;color:#6e6260;">曝光人数</div></div>
+            <div><div style="font-size:16px;font-weight:900;color:var(--amber);font-family:'Share Tech Mono',monospace;">12人</div><div style="font-size:10px;color:#6e6260;">参赛人数</div></div>
+            <div><div style="font-size:16px;font-weight:900;color:var(--amber);font-family:'Share Tech Mono',monospace;">97%</div><div style="font-size:10px;color:#6e6260;">付费人数超越同级</div></div>
+          </div>
+        </div>
+        <!-- 八爪鱼游戏直播截图 -->
+        <div style="margin-top:10px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image18.jpg" alt="年阳八爪鱼游戏直播" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">年阳「八爪鱼游戏」直播现场，设专属UI，观众踊跃参与</div>
+        </div>
+      </div>
+
+      <!-- 主播手段4 -->
+      <div style="padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:rgba(126,201,138,.12);border:1px solid rgba(126,201,138,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);font-family:'Share Tech Mono',monospace;flex-shrink:0;">D</div>
+          <span style="font-size:13px;font-weight:700;color:var(--brand-bone);">开服期组织固定粉丝团群打</span>
+        </div>
+        <p style="font-size:12px;color:#b0a49e;line-height:1.7;">主播定期（如每周固定2次）组织团员进独狼服集体团战，形成"粉丝开黑时段"品牌化节目。不若组织10次+，每次80-90人固定参与，打造了高黏性的粉丝社区活动。</p>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(106,175,207,.06);border:1px solid rgba(106,175,207,.15);border-radius:3px;">
+          <span style="font-size:11px;color:var(--blue);font-weight:600;">💬 核心价值：</span>
+          <span style="font-size:11px;color:#9a8e88;">从"看播"升级为"参与"，粉丝社区的代入感与留存率双提升</span>
+        </div>
+        <!-- 不若独狼服组队截图 -->
+        <div style="margin-top:10px;border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <img src="image24.jpg" alt="不若组织独狼服水友赛" style="width:100%;display:block;opacity:.85;" />
+          <div style="padding:5px 8px;background:rgba(0,0,0,.4);font-size:10px;color:#6e6260;font-family:'Share Tech Mono',monospace;">不若组织「独狼服水友赛」，团员直接进入游戏参与（QQ群181人）</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 运营手段总结矩阵 -->
+  <div class="insight info" style="margin-top:4px;">
+    <div class="insight-title">运营手段 · 效能矩阵总结</div>
+    <ul>
+      <li><strong>ROI最高（主办方）</strong>：中期追加激励加码是本次活动最关键的运营动作，转化率直接翻倍，单位激励成本产出极高。</li>
+      <li><strong>转化率最高（主播侧）</strong>：深度互动型主播（博楠78.2%、5E 78.2%）远超广撒网型（小六儿1.2%），<strong>互动质量 > 粉丝数量</strong>。</li>
+      <li><strong>可复制性最强</strong>：开服卡带玩 + 私域话术 + 自办小赛事，三者组合构成可标准化的"主播拉新套餐"，建议公测期推广。</li>
+      <li><strong>长期沉淀价值最高</strong>：自办赛事（年阳/不若）在活动期外仍在持续运营，形成了超越活动本身的主播生态基础。</li>
+    </ul>
+  </div>
+
+</div>
+
+</div><!-- /container -->
+
+<!-- ══ DOC DOWNLOADS ══ -->
+<div class="container" style="padding-bottom:0;">
+  <div class="doc-downloads">
+    <div class="doc-downloads-title">相关文档下载</div>
+    <div class="doc-downloads-grid">
+
+      <a class="doc-dl-item" href="主播团活动资料/主播团活动资料/《失控进化》主播"先锋拆家团"招募活动.docx" download>
+        <span class="doc-dl-icon">📄</span>
+        <div class="doc-dl-info">
+          <span class="doc-dl-name">主播招募活动方案</span>
+          <span class="doc-dl-meta">DOCX · 招募规则 &amp; 权益体系</span>
+        </div>
+      </a>
+
+      <a class="doc-dl-item" href="主播团活动资料/主播团活动资料/《失控进化》"先锋拆家团"活动宣讲.docx" download>
+        <span class="doc-dl-icon">📄</span>
+        <div class="doc-dl-info">
+          <span class="doc-dl-name">活动宣讲文档</span>
+          <span class="doc-dl-meta">DOCX · 宣讲话术 &amp; 执行指引</span>
+        </div>
+      </a>
+
+      <a class="doc-dl-item" href="主播团活动资料/主播团活动资料/《失控进化》"先锋拆家团" 额外激励方案（1万元专项）.docx" download>
+        <span class="doc-dl-icon">📄</span>
+        <div class="doc-dl-info">
+          <span class="doc-dl-name">额外激励方案（1万元专项）</span>
+          <span class="doc-dl-meta">DOCX · 转化榜 &amp; 开播带玩 &amp; 社群基金</span>
+        </div>
+      </a>
+
+      <a class="doc-dl-item" href="主播团活动资料/主播团活动资料/活动数据.xlsx" download>
+        <span class="doc-dl-icon">📊</span>
+        <div class="doc-dl-info">
+          <span class="doc-dl-name">活动原始数据</span>
+          <span class="doc-dl-meta">XLSX · 完整活动数据表格</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer">
+  失控进化 <em>·</em> 主播团转化活动复盘 <em>·</em> INTERNAL <em>·</em> 2026.04
+</div>
+
+<!-- ══════════════════ ECHARTS ══════════════════ -->
+<script>
+/* ── 品牌色系 ── */
+const B = {
+  red:  '#C43F24', red2: '#FF7132', redDk: '#882818',
+  bone: '#E3DBD2', boneDim: '#9a8e88',
+  dark: '#1E2020', dark2: '#2A2928',
+  green:'#7EC98A', redErr:'#E05252',
+  blue: '#6AAFCF', amber:'#D4882A',
+  grid: '#231e1a', bg: 'transparent',
+  text: '#6e6260', textDim: '#9a8e88',
+};
+
+const TTP = {
+  backgroundColor:'#1a1410',
+  borderColor:'#33271f',
+  textStyle:{color:'#b0a49e',fontSize:12},
+  extraCssText:'border-radius:3px;box-shadow:0 4px 20px rgba(0,0,0,.6);border-top:1px solid #C43F24;'
+};
+const SPLIT = {lineStyle:{color:'#1e1a18'}};
+const AXIS = {
+  axisLabel:{color:'#7a706c',fontSize:10},
+  axisLine:{lineStyle:{color:'#2a201a'}},
+  axisTick:{show:false}
+};
+const GRID = {left:52,right:28,top:30,bottom:28};
+
+/* ── 时序数据 ── */
+const tsNew = [
+  {d:'3/6',reg:93,active:93,rev:200,online:107.46,arpu:2.15,pr:8.6},
+  {d:'3/7',reg:64,active:127,rev:90,online:225.59,arpu:0.71,pr:4.72},
+  {d:'3/8',reg:87,active:185,rev:176,online:244.51,arpu:0.95,pr:3.24},
+  {d:'3/9',reg:65,active:189,rev:190,online:216.84,arpu:1.01,pr:3.7},
+  {d:'3/10',reg:47,active:199,rev:198,online:242.63,arpu:0.99,pr:5.03},
+  {d:'3/11',reg:97,active:251,rev:1818,online:210.65,arpu:7.24,pr:7.17},
+  {d:'3/12',reg:115,active:322,rev:4128,online:238.08,arpu:12.82,pr:7.14},
+  {d:'3/13',reg:127,active:412,rev:120,online:206.52,arpu:0.29,pr:2.91},
+  {d:'3/14',reg:164,active:511,rev:368,online:259.28,arpu:0.72,pr:2.35},
+  {d:'3/15',reg:219,active:621,rev:452,online:235.42,arpu:0.73,pr:2.42},
+  {d:'3/16',reg:159,active:610,rev:1210,online:215.59,arpu:1.98,pr:2.95},
+  {d:'3/17',reg:227,active:729,rev:442,online:210.84,arpu:0.61,pr:2.19},
+  {d:'3/18',reg:1046,active:1584,rev:2354,online:167.27,arpu:1.49,pr:2.9},
+  {d:'3/19',reg:440,active:1586,rev:4532,online:232.16,arpu:2.86,pr:3.47},
+  {d:'3/20',reg:346,active:1533,rev:5486,online:230.54,arpu:3.58,pr:2.8},
+  {d:'3/21',reg:406,active:1599,rev:6500,online:256.19,arpu:4.07,pr:2.94},
+  {d:'3/22',reg:394,active:1610,rev:2484,online:265.37,arpu:1.54,pr:3.17},
+  {d:'3/23',reg:381,active:1559,rev:1728,online:221.54,arpu:1.11,pr:3.34},
+  {d:'3/24',reg:370,active:1570,rev:2940,online:239.77,arpu:1.87,pr:3.38},
+  {d:'3/25',reg:377,active:1568,rev:5486,online:245.1,arpu:3.5,pr:2.61},
+  {d:'3/26',reg:374,active:1596,rev:2400,online:227.37,arpu:1.5,pr:2.13},
+  {d:'3/27',reg:349,active:1626,rev:2858,online:220.93,arpu:1.76,pr:2.03},
+  {d:'3/28',reg:175,active:1529,rev:644,online:258.18,arpu:0.42,pr:1.64},
+  {d:'3/29',reg:365,active:1511,rev:2598,online:233.22,arpu:1.72,pr:3.51},
+  {d:'3/30',reg:128,active:1059,rev:1126,online:193.6,arpu:1.06,pr:2.08},
+];
+const tsDash = [
+  {d:'3/6',online:98.04,pr:3.09},{d:'3/7',online:175.86,pr:3.47},
+  {d:'3/8',online:190.44,pr:3.01},{d:'3/9',online:167.89,pr:3.08},
+  {d:'3/10',online:175.71,pr:2.44},{d:'3/11',online:178.92,pr:2.74},
+  {d:'3/12',online:179.92,pr:2.3},{d:'3/13',online:164.92,pr:2.76},
+  {d:'3/14',online:217.8,pr:2.3},{d:'3/15',online:213.89,pr:2.46},
+  {d:'3/16',online:180.18,pr:2.15},{d:'3/17',online:179.7,pr:2.21},
+  {d:'3/18',online:180.61,pr:2.1},{d:'3/19',online:178.23,pr:2.12},
+  {d:'3/20',online:159.3,pr:1.8},{d:'3/21',online:206.92,pr:2.04},
+  {d:'3/22',online:209.8,pr:1.92},{d:'3/23',online:174.33,pr:2.35},
+  {d:'3/24',online:182.82,pr:1.92},{d:'3/25',online:188.75,pr:1.92},
+  {d:'3/26',online:181,pr:1.86},{d:'3/27',online:157.73,pr:1.68},
+  {d:'3/28',online:197.53,pr:1.29},{d:'3/29',online:192.42,pr:1.84},
+  {d:'3/30',online:126.39,pr:1.72},
+];
+const tsOld = [
+  {d:'3/6',active:1293,rev:7028,online:254.04,pr:3.79},
+  {d:'3/7',active:1314,rev:4834,online:313.44,pr:3.2},
+  {d:'3/8',active:1313,rev:1814,online:295.7,pr:2.36},
+  {d:'3/9',active:1132,rev:9170,online:251.41,pr:3.36},
+  {d:'3/10',active:1115,rev:5468,online:259.99,pr:3.5},
+  {d:'3/11',active:1086,rev:3892,online:268.65,pr:2.95},
+  {d:'3/12',active:1043,rev:4996,online:267.04,pr:2.78},
+  {d:'3/13',active:1119,rev:2244,online:247.96,pr:3.93},
+  {d:'3/14',active:1167,rev:4842,online:329.09,pr:2.91},
+  {d:'3/15',active:1130,rev:1190,online:320.32,pr:2.04},
+  {d:'3/16',active:980,rev:2394,online:240.52,pr:3.37},
+  {d:'3/17',active:950,rev:2478,online:256.37,pr:2.74},
+  {d:'3/18',active:961,rev:3552,online:246.75,pr:2.39},
+  {d:'3/19',active:948,rev:4286,online:247.08,pr:2.0},
+  {d:'3/20',active:1009,rev:3466,online:236.4,pr:2.08},
+  {d:'3/21',active:1048,rev:2642,online:300.16,pr:2.19},
+  {d:'3/22',active:951,rev:5994,online:288.76,pr:2.63},
+  {d:'3/23',active:832,rev:2936,online:230.43,pr:2.04},
+  {d:'3/24',active:759,rev:470,online:239.3,pr:1.32},
+  {d:'3/25',active:687,rev:1878,online:247.34,pr:1.89},
+  {d:'3/26',active:641,rev:1284,online:229.46,pr:2.34},
+  {d:'3/27',active:679,rev:702,online:209.94,pr:2.06},
+  {d:'3/28',active:684,rev:1104,online:263.95,pr:1.46},
+  {d:'3/29',active:584,rev:1668,online:232.3,pr:2.23},
+  {d:'3/30',active:469,rev:268,online:149.19,pr:1.49},
+];
+const tsAll = tsNew.map((n,i)=>{
+  const o=tsOld[i];
+  const ta=n.active+o.active;
+  const tr=n.rev+o.rev;
+  const ao=(n.online*n.active+o.online*o.active)/ta;
+  const tp=Math.round(n.active*n.pr/100)+Math.round(o.active*o.pr/100);
+  return {d:n.d,reg:n.reg,active:ta,rev:tr,online:Math.round(ao*10)/10,
+    arpu:Math.round(tr/ta*100)/100,pr:Math.round(tp/ta*10000)/100};
+});
+const dates = tsAll.map(d=>d.d);
+
+/* ── helper gradients ── */
+const gRed  = new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(196,63,36,.9)'},{offset:1,color:'rgba(136,40,24,.4)'}]);
+const gGrn  = new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(126,201,138,.8)'},{offset:1,color:'rgba(58,138,72,.3)'}]);
+const gBlue = new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(106,175,207,.8)'},{offset:1,color:'rgba(42,100,143,.3)'}]);
+const gAmber= new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(212,136,42,.8)'},{offset:1,color:'rgba(130,80,10,.3)'}]);
+const aRed  = {color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(196,63,36,.12)'},{offset:1,color:'transparent'}])};
+const aGrn  = {color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(126,201,138,.1)'},{offset:1,color:'transparent'}])};
+const aAmber= {color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(212,136,42,.1)'},{offset:1,color:'transparent'}])};
+function bar(data,color){
+  return{type:'bar',data,itemStyle:{color,borderRadius:[2,2,0,0]},barMaxWidth:14,emphasis:{focus:'series'}};
+}
+function line(data,color,area){
+  return{type:'line',data,smooth:true,symbol:'none',
+    lineStyle:{color,width:2},itemStyle:{color},
+    ...(area?{areaStyle:area}:{})
+  };
+}
+
+/* ── ROI popup charts ── */
+let roiInited=false;
+function initRoi(){
+  if(roiInited)return; roiInited=true;
+  echarts.init(document.getElementById('chart-roi-pie')).setOption({
+    backgroundColor:B.bg,
+    tooltip:{trigger:'item',...TTP,formatter:'{b}<br/><strong>¥{c}</strong> ({d}%)'},
+    legend:{bottom:6,textStyle:{color:B.text,fontSize:11},icon:'circle',itemGap:16},
+    series:[{type:'pie',radius:['40%','66%'],center:['50%','45%'],
+      label:{color:B.textDim,formatter:'{d}%',fontSize:11},
+      labelLine:{lineStyle:{color:'#2a2420'}},
+      data:[
+        {value:50528,name:'新用户流水',itemStyle:{color:B.red}},
+        {value:80600,name:'老用户流水',itemStyle:{color:B.green}},
+        {value:30000,name:'活动投入',itemStyle:{color:'#2a2420'}}
+      ]
+    }]
+  });
+  echarts.init(document.getElementById('chart-roi-bar')).setOption({
+    backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP},
+    grid:{left:50,right:20,top:24,bottom:28},
+    xAxis:{type:'category',data:['入团成本','CPA','新用户ARPU','全用户ARPU'],...AXIS},
+    yAxis:{type:'value',name:'元',splitLine:SPLIT,...AXIS},
+    series:[{type:'bar',
+      data:[
+        {value:1.16,itemStyle:{color:gBlue,borderRadius:[2,2,0,0]}},
+        {value:4.54,itemStyle:{color:gRed,borderRadius:[2,2,0,0]}},
+        {value:7.64,itemStyle:{color:gGrn,borderRadius:[2,2,0,0]}},
+        {value:5.07,itemStyle:{color:gAmber,borderRadius:[2,2,0,0]}},
+      ],
+      barMaxWidth:44,
+      label:{show:true,position:'top',color:B.textDim,formatter:'¥{c}',fontSize:11}
+    }]
+  });
+}
+
+/* ── Funnel popup charts ── */
+let funnelInited=false;
+function initFunnel(){
+  if(funnelInited)return; funnelInited=true;
+  echarts.init(document.getElementById('chart-join-pie')).setOption({
+    backgroundColor:B.bg,
+    tooltip:{trigger:'item',...TTP,formatter:'{b}<br/><strong>{c}</strong> ({d}%)'},
+    legend:{bottom:4,textStyle:{color:B.text,fontSize:11},icon:'circle',itemGap:14},
+    series:[{type:'pie',radius:['36%','64%'],center:['50%','44%'],
+      label:{color:B.textDim,formatter:'{d}%',fontSize:11},
+      labelLine:{lineStyle:{color:'#2a2420'}},
+      data:[
+        {value:16828,name:'新用户未注册',itemStyle:{color:'#7a4a2a'}},
+        {value:6615,name:'新用户已注册',itemStyle:{color:B.blue}},
+        {value:2397,name:'老用户',itemStyle:{color:B.green}}
+      ]
+    }]
+  });
+  echarts.init(document.getElementById('chart-funnel')).setOption({
+    backgroundColor:B.bg,
+    tooltip:{trigger:'item',...TTP},
+    series:[{
+      type:'funnel',left:'6%',right:'6%',top:10,bottom:50,
+      width:'88%',min:20,max:24000,minSize:'12%',maxSize:'100%',
+      sort:'descending',gap:5,
+      label:{show:true,position:'inside',
+        formatter:p=>p.name+'\n'+p.value.toLocaleString(),
+        fontSize:12,fontWeight:'bold',color:'#fff'},
+      labelLine:{show:false},
+      itemStyle:{borderColor:B.bg,borderWidth:3},
+      data:[
+        {value:23443,name:'新用户入团',itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:B.redDk},{offset:1,color:B.red}])}},
+        {value:6615,name:'新用户注册',itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3a7a9f'},{offset:1,color:B.blue}])}},
+        {value:967,name:'日均活跃',itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3a8a48'},{offset:1,color:B.green}])}},
+        {value:34,name:'日均付费',itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#8a5510'},{offset:1,color:B.amber}])}}
+      ]
+    }],
+    graphic:[
+      {type:'group',left:'12%',bottom:4,children:[
+        {type:'text',style:{text:'入团→注册',font:'10px sans-serif',fill:B.text,textAlign:'center'}},
+        {type:'text',top:14,style:{text:'28.2%',font:'bold 14px monospace',fill:B.red,textAlign:'center'}}
+      ]},
+      {type:'group',left:'center',bottom:4,children:[
+        {type:'text',style:{text:'注册→活跃',font:'10px sans-serif',fill:B.text,textAlign:'center'}},
+        {type:'text',top:14,style:{text:'14.6%',font:'bold 14px monospace',fill:B.red,textAlign:'center'}}
+      ]},
+      {type:'group',right:'12%',bottom:4,children:[
+        {type:'text',style:{text:'活跃→付费',font:'10px sans-serif',fill:B.text,textAlign:'center'}},
+        {type:'text',top:14,style:{text:'3.5%',font:'bold 14px monospace',fill:B.red,textAlign:'center'}}
+      ]}
+    ]
+  });
+}
+
+/* ── popup events ── */
+const roiOverlay=document.getElementById('roi-overlay');
+const funnelOverlay=document.getElementById('funnel-overlay');
+document.getElementById('roi-trigger-card').addEventListener('click',()=>{
+  roiOverlay.classList.add('active');document.body.style.overflow='hidden';
+  setTimeout(initRoi,50);
+});
+document.getElementById('roi-close').addEventListener('click',()=>{roiOverlay.classList.remove('active');document.body.style.overflow='';});
+roiOverlay.addEventListener('click',e=>{if(e.target===roiOverlay){roiOverlay.classList.remove('active');document.body.style.overflow='';}});
+document.getElementById('funnel-trigger-card').addEventListener('click',()=>{
+  funnelOverlay.classList.add('active');document.body.style.overflow='hidden';
+  setTimeout(initFunnel,50);
+});
+document.getElementById('funnel-close').addEventListener('click',()=>{funnelOverlay.classList.remove('active');document.body.style.overflow='';});
+funnelOverlay.addEventListener('click',e=>{if(e.target===funnelOverlay){funnelOverlay.classList.remove('active');document.body.style.overflow='';}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){roiOverlay.classList.remove('active');funnelOverlay.classList.remove('active');document.body.style.overflow='';}});
+
+/* ── 雷达 ── */
+echarts.init(document.getElementById('chart-bench-radar')).setOption({
+  backgroundColor:B.bg,
+  legend:{data:['活动新用户','大盘新用户'],textStyle:{color:B.text,fontSize:11},top:4,left:'center',itemGap:20,icon:'circle'},
+  radar:{center:['50%','57%'],radius:'58%',
+    indicator:[{name:'在线时长',max:300},{name:'ARPU',max:3},{name:'付费渗透率',max:5},{name:'ARPPU',max:80}],
+    axisLine:{lineStyle:{color:B.grid}},
+    splitLine:{lineStyle:{color:B.grid}},
+    splitArea:{areaStyle:{color:['transparent']}},
+    axisName:{color:B.textDim,fontSize:11}
+  },
+  series:[{type:'radar',data:[
+    {value:[224.2,2.27,3.54,60.65],name:'活动新用户',
+      lineStyle:{color:B.red,width:2},itemStyle:{color:B.red},
+      areaStyle:{color:'rgba(196,63,36,.1)'}},
+    {value:[178.4,1.06,2.26,50.02],name:'大盘新用户',
+      lineStyle:{color:'#6e8fa0',width:2,type:'dashed'},itemStyle:{color:'#6e8fa0'},
+      areaStyle:{color:'rgba(110,143,160,.12)'}}
+  ]}]
+});
+
+echarts.init(document.getElementById('chart-bench-bar')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP},
+  legend:{data:['活动新用户','大盘新用户'],textStyle:{color:B.text,fontSize:11},top:4,right:10,icon:'circle',itemGap:16},
+  grid:{left:36,right:20,top:42,bottom:28},
+  xAxis:{type:'category',data:['在线时长','ARPU','付费渗透率%','ARPPU'],...AXIS},
+  yAxis:{type:'value',splitLine:SPLIT,...AXIS},
+  series:[
+    {...bar([224.2,2.27,3.54,60.65],gRed),name:'活动新用户',barGap:'16%',barMaxWidth:28},
+    {...bar([178.4,1.06,2.26,50.02],new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(110,143,160,.85)'},{offset:1,color:'rgba(60,90,110,.4)'}])),name:'大盘新用户',barMaxWidth:28},
+  ]
+});
+
+echarts.init(document.getElementById('chart-online-cmp')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP,valueFormatter:v=>v+' 分钟'},
+  legend:{data:['活动新用户','大盘新用户'],textStyle:{color:B.text,fontSize:11},top:4,right:12,icon:'circle',itemGap:16},
+  grid:{left:54,right:28,top:42,bottom:28},
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:{type:'value',name:'分钟',splitLine:SPLIT,...AXIS},
+  series:[
+    {...line(tsNew.map(d=>d.online),B.red,aRed),name:'活动新用户'},
+    {...line(tsDash.map(d=>d.online),'#6e8fa0'),name:'大盘新用户',lineStyle:{color:'#6e8fa0',width:2,type:'dashed'}}
+  ]
+});
+
+echarts.init(document.getElementById('chart-payrate-cmp')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP,valueFormatter:v=>v+'%'},
+  legend:{data:['活动新用户','大盘新用户'],textStyle:{color:B.text,fontSize:11},top:4,right:12,icon:'circle',itemGap:16},
+  grid:{left:54,right:28,top:42,bottom:28},
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:{type:'value',name:'%',splitLine:SPLIT,...AXIS},
+  series:[
+    {...line(tsNew.map(d=>d.pr),B.amber,aAmber),name:'活动新用户'},
+    {...line(tsDash.map(d=>d.pr),'#6e8fa0'),name:'大盘新用户',lineStyle:{color:'#6e8fa0',width:2,type:'dashed'}}
+  ]
+});
+
+echarts.init(document.getElementById('chart-old-vs')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP,valueFormatter:v=>v+'%'},
+  legend:{data:['老用户变化率','大盘变化率'],textStyle:{color:B.text,fontSize:11},top:4,right:10,icon:'circle',itemGap:16},
+  grid:{left:80,right:28,top:42,bottom:18},
+  yAxis:{type:'category',data:['日均活跃','日均在线','日均流水','日均付费','ARPU','付费渗透率','ARPPU'],...AXIS},
+  xAxis:{type:'value',name:'%',splitLine:SPLIT,...AXIS,axisLabel:{formatter:v=>v+'%',color:B.text,fontSize:10}},
+  series:[
+    {name:'老用户变化率',type:'bar',
+      data:[-14.9,-20.7,-57.6,-61.6,-54.4,-58.1,7.1],
+      itemStyle:{color:B.red,borderRadius:[0,2,2,0]},barGap:'25%',barMaxWidth:10},
+    {name:'大盘变化率',type:'bar',
+      data:[-44.7,-13.6,-52.0,-60.3,-13.9,-31.6,25.2],
+      itemStyle:{color:'#6e8fa0',borderRadius:[0,2,2,0]},barMaxWidth:10}
+  ]
+});
+
+echarts.init(document.getElementById('chart-excess')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP,valueFormatter:v=>v+'%'},
+  grid:{left:80,right:56,top:20,bottom:18},
+  yAxis:{type:'category',data:['日均活跃','日均在线','日均流水','日均付费','ARPU','付费渗透率','ARPPU'],...AXIS},
+  xAxis:{type:'value',name:'%',splitLine:SPLIT,...AXIS,axisLabel:{formatter:v=>v+'%',color:B.text,fontSize:10}},
+  series:[{type:'bar',barMaxWidth:14,
+    label:{show:true,position:p=>p.value>=0?'right':'left',color:'#D4C9C4',formatter:d=>(d.value>0?'+':'')+d.value+'%',fontSize:11,fontWeight:'bold'},
+    data:[
+      {value:29.8,itemStyle:{color:B.green,borderRadius:[0,2,2,0]}},
+      {value:-7.1,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+      {value:-5.6,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+      {value:-1.3,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+      {value:-40.5,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+      {value:-26.5,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+      {value:-18.1,itemStyle:{color:B.redErr,borderRadius:[0,2,2,0]}},
+    ]
+  }]
+});
+
+echarts.init(document.getElementById('chart-reg')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP},
+  grid:GRID,
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:{type:'value',splitLine:SPLIT,...AXIS},
+  series:[bar(tsNew.map(d=>d.reg),gRed)]
+});
+
+echarts.init(document.getElementById('chart-active')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP},
+  legend:{data:['全量活跃','人均在线分钟'],textStyle:{color:B.text,fontSize:11},top:4,right:10,icon:'circle',itemGap:14},
+  grid:{left:52,right:54,top:40,bottom:28},
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:[{type:'value',name:'活跃',splitLine:SPLIT,...AXIS},{type:'value',name:'分钟',splitLine:{show:false},...AXIS}],
+  series:[
+    {...bar(tsAll.map(d=>d.active),gBlue),name:'全量活跃',barMaxWidth:12},
+    {...line(tsAll.map(d=>d.online),B.amber),name:'人均在线分钟',yAxisIndex:1}
+  ]
+});
+
+echarts.init(document.getElementById('chart-rev')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP,valueFormatter:v=>'¥'+v.toLocaleString()},
+  grid:GRID,
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:{type:'value',splitLine:SPLIT,...AXIS},
+  series:[bar(tsAll.map(d=>d.rev),gGrn)]
+});
+
+echarts.init(document.getElementById('chart-pay')).setOption({
+  backgroundColor:B.bg,tooltip:{trigger:'axis',...TTP},
+  legend:{data:['付费渗透率%','ARPU元'],textStyle:{color:B.text,fontSize:11},top:4,right:10,icon:'circle',itemGap:14},
+  grid:{left:52,right:54,top:40,bottom:28},
+  xAxis:{type:'category',data:dates,...AXIS},
+  yAxis:[{type:'value',name:'%',splitLine:SPLIT,...AXIS},{type:'value',name:'元',splitLine:{show:false},...AXIS}],
+  series:[
+    {...line(tsAll.map(d=>d.pr),B.red,aRed),name:'付费渗透率%'},
+    {...line(tsAll.map(d=>d.arpu),B.amber),name:'ARPU元',yAxisIndex:1}
+  ]
+});
+
+/* ── Nav active scroll ── */
+document.querySelectorAll('.nav-links a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelectorAll('.nav-links a').forEach(n=>n.classList.remove('active'));
+    a.classList.add('active');
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+const secs=document.querySelectorAll('.section');
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let c='';
+  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-130)c=s.id;});
+  navAs.forEach(a=>{
+    a.classList.remove('active');
+    if(a.getAttribute('href')==='#'+c)a.classList.add('active');
+  });
+});
+window.addEventListener('resize',()=>{
+  document.querySelectorAll('.chart-container').forEach(el=>{
+    const ec=echarts.getInstanceByDom(el);if(ec)ec.resize();
+  });
+});
+</script>
+</body>
+</html>
